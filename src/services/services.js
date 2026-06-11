@@ -1,0 +1,3 @@
+const getAluno = async () => {
+    
+}
