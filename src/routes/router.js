@@ -21,6 +21,13 @@ module.exports = (req, res) => {
     const id = url.split('/')[2];
     return controller.getAlunoById(req, res, id);
   }
+  // <-------- EXERCICIO 3 --------->
+  else if(url.startsWith('/produto') && method === 'GET'){
+    const urlCompleta = new URL(url, `http://${req.headers.host}`)
+    const categoria = urlCompleta.searchParams.get('categoria')
+
+    return controller.getProduto(req, res, categoria)
+  }
 
   // <---------- ERRO 404 ----------->
   else {

@@ -80,6 +80,22 @@ const getAlunoById = async (req, res, id) => {
     res.end(JSON.stringify({ error: error }));
   }
 };
+// <---------- EXERCICIO 3 ---------->
+const getProduto = async (req, res, categoria) => {
+  try {
+    const produtos = await services.getProduto(categoria);
+
+    if (!produtos) {
+      res.statusCode = 404;
+      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+    }
+    res.statusCode = 200;
+    res.end(JSON.stringify(produtos));
+  } catch (error) {
+    res.statusCode = 400;
+    res.end(JSON.stringify({ error: error }));
+  }
+};
 
 module.exports = {
   getHome,
@@ -87,4 +103,5 @@ module.exports = {
   getAbout,
   getAlunos,
   getAlunoById,
+  getProduto
 };

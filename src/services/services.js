@@ -4,10 +4,6 @@ const getAluno = async () => {
   try {
     const data = await fs.readFile('alunos.json', 'utf-8');
     alunos = JSON.parse(data);
-
-    if (alunos.length > 0) {
-      idCounter = alunos[alunos.length - 1].id + 1;
-    }
   } catch {
     alunos = [];
   }
@@ -17,11 +13,7 @@ const getAluno = async () => {
 const getAlunoById = async (id) => {
   try {
     const data = await fs.readFile('alunos.json', 'utf-8');
-    alunos = JSON.parse(data);
-
-    if (alunos.length > 0) {
-      idCounter = alunos[alunos.length - 1].id + 1;
-    }
+    var alunos = JSON.parse(data);
   } catch {
     alunos = [];
   }
@@ -30,7 +22,27 @@ const getAlunoById = async (id) => {
   return aluno || null;
 };
 
+const getProduto = async (categoria) => {
+  let produtos = [];
+
+  try {
+    const data = await fs.readFile('produtos.json', 'utf-8');
+    produtos = JSON.parse(data);
+  } catch {
+    produtos = [];
+  }
+
+  if (!categoria) return produtos;
+
+  const produtosFiltrados = produtos.filter(
+    (t) => t.categoria && t.categoria.toLowerCase() === categoria.toLowerCase()
+  );
+
+  return produtosFiltrados;
+};
+
 module.exports = {
   getAluno,
   getAlunoById,
+  getProduto
 };
