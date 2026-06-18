@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "nome": "Gabriel Darbello",
+    "turma": "2 ano",
+    "curso": "DS-AMS"
+  },
+  {
+    "id": 2,
+    "nome": "Felipe Kuhl",
+    "turma": "2 ano",
+    "curso": "DS-AMS"
+  },
+  {
+    "id": 3,
+    "nome": "CarliBR",
+    "turma": "2 ano",
+    "curso": "DS-AMS"
+  },
+  {
+    "id": 4,
+    "nome": "Lucas siqueira",
+    "turma": "2 ano",
+    "curso": "DS-AMS"
+  },
+  {
+    "id": 5,
+    "nome": "Miguel Martins",
+    "turma":"2 ano",
+    "curso": "DS-AMS"
+}
+]

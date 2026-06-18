@@ -7,15 +7,21 @@ module.exports = (req, res) => {
     if(url === "/" && method === "GET"){
         return controller.getHome(req, res)
     }
-    if(url === "/sobre" && method === "GET"){
+    else if(url === "/sobre" && method === "GET"){
         return controller.getAbout(req, res)
     }
-    if(url === "/status" && method === "GET"){
+    else if(url === "/status" && method === "GET"){
         return controller.getStatus(req, res)
     }
 
     // <-------- EXERCICIO 2 --------->
-    if(url === "/alunos" && method === "GET"){
+    else if(url === "/alunos" && method === "GET"){
         return controller.getAlunos(req, res)
+    }
+
+    // <---------- ERRO 404 ----------->
+    else{
+        res.statusCode = 404
+        res.end("Erro 404")
     }
 }
