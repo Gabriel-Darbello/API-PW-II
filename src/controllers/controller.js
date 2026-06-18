@@ -43,7 +43,6 @@ const getAbout = async (req, res) => {
 };
 
 const getStatus = async (req, res) => {
-  const body = await getRequestBody(req);
   try {
     res.statusCode = 200;
     res.end(JSON.stringify({ message: 'Servidor funcionando!' }));
@@ -80,7 +79,7 @@ const getAlunoById = async (req, res, id) => {
     res.end(JSON.stringify({ error: error }));
   }
 };
-// <---------- EXERCICIO 3 ---------->
+// <---------- EXERCICIO 4 ---------->
 const getProduto = async (req, res, categoria) => {
   try {
     const produtos = await services.getProduto(categoria);
@@ -96,6 +95,14 @@ const getProduto = async (req, res, categoria) => {
     res.end(JSON.stringify({ error: error }));
   }
 };
+// <-------- EXERCICIO 5 --------->
+const createAluno = async (req, res) => {
+  const body = await getRequestBody(req);
+  const task = await taskService.addTask(body.title);
+
+  res.statusCode = 201;
+  res.end(JSON.stringify(task));
+};
 
 module.exports = {
   getHome,
@@ -103,5 +110,5 @@ module.exports = {
   getAbout,
   getAlunos,
   getAlunoById,
-  getProduto
+  getProduto,
 };

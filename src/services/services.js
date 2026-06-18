@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 
+// <-------- EXERCICIO 2 --------->
 const getAluno = async () => {
   try {
     const data = await fs.readFile('alunos.json', 'utf-8');
@@ -10,6 +11,7 @@ const getAluno = async () => {
   return alunos;
 };
 
+// <-------- EXERCICIO 3 --------->
 const getAlunoById = async (id) => {
   try {
     const data = await fs.readFile('alunos.json', 'utf-8');
@@ -22,27 +24,31 @@ const getAlunoById = async (id) => {
   return aluno || null;
 };
 
+
+// <-------- EXERCICIO 4 --------->
 const getProduto = async (categoria) => {
-  let produtos = [];
+    let produtos = [];
 
-  try {
-    const data = await fs.readFile('produtos.json', 'utf-8');
-    produtos = JSON.parse(data);
-  } catch {
-    produtos = [];
-  }
+    try {
+        const data = await fs.readFile('produtos.json', 'utf-8');
+        produtos = JSON.parse(data);
+    } catch {
+        produtos = [];
+    }
 
-  if (!categoria) return produtos;
+    if (!categoria) return produtos;
 
   const produtosFiltrados = produtos.filter(
     (t) => t.categoria && t.categoria.toLowerCase() === categoria.toLowerCase()
-  );
+);
 
-  return produtosFiltrados;
+return produtosFiltrados;
 };
+
+// <-------- EXERCICIO 5 --------->
 
 module.exports = {
   getAluno,
   getAlunoById,
-  getProduto
+  getProduto,
 };

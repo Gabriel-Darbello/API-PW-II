@@ -21,12 +21,16 @@ module.exports = (req, res) => {
     const id = url.split('/')[2];
     return controller.getAlunoById(req, res, id);
   }
-  // <-------- EXERCICIO 3 --------->
-  else if(url.startsWith('/produto') && method === 'GET'){
-    const urlCompleta = new URL(url, `http://${req.headers.host}`)
-    const categoria = urlCompleta.searchParams.get('categoria')
+  // <-------- EXERCICIO 4 --------->
+  else if (url.startsWith('/produto') && method === 'GET') {
+    const urlCompleta = new URL(url, `http://${req.headers.host}`);
+    const categoria = urlCompleta.searchParams.get('categoria');
 
-    return controller.getProduto(req, res, categoria)
+    return controller.getProduto(req, res, categoria);
+  }
+  // <-------- EXERCICIO 5 --------->
+  else if (url === '/alunos' && method === 'POST') {
+    return controller.createAluno(req, res);
   }
 
   // <---------- ERRO 404 ----------->
