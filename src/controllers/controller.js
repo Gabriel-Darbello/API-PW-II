@@ -64,10 +64,27 @@ const getAlunos = async (req, res) => {
     res.end(JSON.stringify({ error: error }));
   }
 };
+// <---------- EXERCICIO 3 ---------->
+const getAlunoById = async (req, res, id) => {
+  try {
+    const aluno = await services.getAlunoById(id);
+
+    if (!aluno) {
+      res.statusCode = 404;
+      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+    }
+    res.statusCode = 200;
+    res.end(JSON.stringify(aluno));
+  } catch (error) {
+    res.statusCode = 400;
+    res.end(JSON.stringify({ error: error }));
+  }
+};
 
 module.exports = {
   getHome,
   getStatus,
   getAbout,
   getAlunos,
+  getAlunoById,
 };
