@@ -1,4 +1,5 @@
 const fs = require('fs').promises;
+const { Aluno } = require('../models/models.js');
 
 // centralização de leitura de arquivos
 const loadData = async (file) => {
@@ -41,29 +42,52 @@ const getProduto = async (categoria) => {
 
 // <-------- EXERCICIO 5 --------->
 const addAluno = async (nome, turma, curso) => {
+    const alunos = await loadData('alunos.json');
+
+    let idCounter = 1;
+    if (alunos.length > 0) {
+        idCounter = alunos[alunos.length - 1].id + 1;
+    }
+
+    let novoAluno = { id: idCounter, nome, turma, curso };
+
+    alunos.push(novoAluno);
+
+    try {
+        await fs.writeFile('alunos.json', JSON.stringify(alunos, null, 2));
+    } catch (err) {
+    console.log('Erro ao salvar o arquivo', err);
+}
+
+return novoAluno;
+};
+
+// <-------- EXERCICIO 6 --------->
+const updateAluno = async (id, nome, turma, curso) => {
   const alunos = await loadData('alunos.json');
+  const index = alunos.findIndex((aluno) => aluno.id == id);
 
-  let idCounter = 1;
-  if (alunos.length > 0) {
-    idCounter = alunos[alunos.length - 1].id + 1;
-  }
+  if (index === -1) return null;
 
-  let novoAluno = { id: idCounter, nome, turma, curso };
+  const idFormatado = Number(id);
 
-  alunos.push(novoAluno);
+  const alunoAtualizado = Aluno(idFormatado, nome, turma, curso);
+
+  alunos[index] = alunoAtualizado;
 
   try {
     await fs.writeFile('alunos.json', JSON.stringify(alunos, null, 2));
   } catch (err) {
-    console.log('Erro ao salvar o arquivo', err);
+    console.log('Erro ao atualizar o arquivo de alunos:', err);
   }
 
-  return novoAluno;
+  return alunoAtualizado;
 };
 
 module.exports = {
   getAluno,
   getAlunoById,
   getProduto,
-  addAluno
+  addAluno,
+  updateAluno
 };

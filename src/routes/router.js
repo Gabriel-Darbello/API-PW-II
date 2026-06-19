@@ -33,6 +33,12 @@ module.exports = (req, res) => {
     return controller.createAluno(req, res);
   }
 
+  // <-------- EXERCICIO 6 --------->
+  else if (url.startsWith('/alunos/') && method === 'PUT') {
+    const id = url.split('/')[2];
+    return controller.updateAluno(req, res, id);
+  }
+
   // <---------- ERRO 404 ----------->
   else {
     res.statusCode = 404;

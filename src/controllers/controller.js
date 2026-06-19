@@ -103,19 +103,48 @@ const createAluno = async (req, res) => {
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ error: "Campos obrigatórios: nome, turma e curso." }));
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ error: 'Campos obrigatórios: nome, turma e curso.' }));
     }
 
     const aluno = await services.addAluno(nome, turma, curso);
 
-    res.writeHead(201, { "Content-Type": "application/json" });
+    res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(aluno));
+  } catch (error) {
+    console.error('Erro no controller:', error);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Erro interno no servidor.' }));
+  }
+};
+
+// <-------- EXERCICIO 6 --------->
+const updateAluno = async (req, res, id) => {
+  try {
+    const alunoExistente = await services.getAlunoById(id);
+    if (!alunoExistente) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+    }
+
+    const body = await getRequestBody(req);
+    const { nome, turma, curso } = body;
+
+    if (!nome || !turma || !curso) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({
+        error: "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios."
+      }));
+    }
+
+    const alunoAtualizado = await services.updateAluno(id, nome, turma, curso);
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(alunoAtualizado));
 
   } catch (error) {
-    console.error("Erro no controller:", error);
-    res.writeHead(500, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Erro interno no servidor." }));
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Erro ao processar a requisição (JSON malformado)." }));
   }
 };
 
@@ -126,5 +155,6 @@ module.exports = {
   getAlunos,
   getAlunoById,
   getProduto,
-  createAluno
+  createAluno,
+  updateAluno
 };
