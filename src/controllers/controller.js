@@ -95,13 +95,28 @@ const getProduto = async (req, res, categoria) => {
     res.end(JSON.stringify({ error: error }));
   }
 };
+
 // <-------- EXERCICIO 5 --------->
 const createAluno = async (req, res) => {
-  const body = await getRequestBody(req);
-  const task = await taskService.addTask(body.title);
+  try {
+    const body = await getRequestBody(req);
+    const { nome, turma, curso } = body;
 
-  res.statusCode = 201;
-  res.end(JSON.stringify(task));
+    if (!nome || !turma || !curso) {
+      res.writeHead(400, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ error: "Campos obrigatórios: nome, turma e curso." }));
+    }
+
+    const aluno = await services.addAluno(nome, turma, curso);
+
+    res.writeHead(201, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(aluno));
+
+  } catch (error) {
+    console.error("Erro no controller:", error);
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Erro interno no servidor." }));
+  }
 };
 
 module.exports = {
@@ -111,4 +126,5 @@ module.exports = {
   getAlunos,
   getAlunoById,
   getProduto,
+  createAluno
 };
