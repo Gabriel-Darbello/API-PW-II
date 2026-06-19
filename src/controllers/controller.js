@@ -1,8 +1,16 @@
 const services = require('../services/services.js');
+const fs = require('fs').promises;
 
+// <-------- EXERCICIO 8 --------->
 const sendJson = (res, status, data) => {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(data));
+};
+
+// <---------- EXERCICIO 9 ---------->
+const sendHtml = (res, status, htmlContent) => {
+  res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(htmlContent);
 };
 
 const getRequestBody = (req) => {
@@ -77,7 +85,12 @@ const createAluno = async (req, res) => {
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      return sendJson(res, 400, { error: 'Campos obrigatórios: nome, turma e curso.' });
+      return sendJson(
+        res,
+        400,
+        { error: 'Campos obrigatórios: nome, turma e curso.' },
+        'application/json'
+      );
     }
 
     const aluno = await services.addAluno(nome, turma, curso);
@@ -100,15 +113,26 @@ const updateAluno = async (req, res, id) => {
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      return sendJson(res, 400, {
-        error: "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios.",
-      });
+      return sendJson(
+        res,
+        400,
+        {
+          error:
+            "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios.",
+        },
+        'application/json'
+      );
     }
 
     const alunoAtualizado = await services.updateAluno(id, nome, turma, curso);
     sendJson(res, 200, alunoAtualizado);
   } catch (error) {
-    sendJson(res, 400, { error: 'Erro ao processar a requisição (JSON malformado).' });
+    sendJson(
+      res,
+      400,
+      { error: 'Erro ao processar a requisição (JSON malformado).' },
+      'application/json'
+    );
   }
 };
 
@@ -128,6 +152,23 @@ const deleteAluno = async (req, res, id) => {
   }
 };
 
+// <-------- EXERCICIO 9 --------->
+const getPagina = async (req, res) => {
+  try {
+    const page = await fs.readFile('src/pages/index.html', 'utf-8');
+    sendHtml(res, 200, page);
+  } catch (error) {
+    console.error('Erro ao abrir index.html, tentando carregar 404...', error);
+    try {
+      const errorPage = await fs.readFile('src/pages/404.html', 'utf-8');
+      sendHtml(res, 404, errorPage);
+    } catch (err) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Página não encontrada e arquivo 404.html ausente.');
+    }
+  }
+};
+
 module.exports = {
   getHome,
   getStatus,
@@ -138,4 +179,5 @@ module.exports = {
   createAluno,
   updateAluno,
   deleteAluno,
+  getPagina,
 };

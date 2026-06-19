@@ -44,6 +44,9 @@ const handleRoutes = async (req, res) => {
     return controller.deleteAluno(req, res, id);
   }
 
+    // <-------- EXERCICIO 9 --------->
+  if(url === '/pagina' && method === 'GET') return controller.getPagina(req, res)
+
   // <---------- ERRO 404 ----------->
   return notFound(res);
 };
