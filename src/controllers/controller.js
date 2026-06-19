@@ -1,12 +1,16 @@
 const services = require('../services/services.js');
 
+const sendJson = (res, status, data) => {
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify(data));
+};
+
 const getRequestBody = (req) => {
   return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
     });
-
     req.on('end', () => {
       try {
         resolve(body ? JSON.parse(body) : {});
@@ -14,7 +18,6 @@ const getRequestBody = (req) => {
         reject(new Error('JSON inválido'));
       }
     });
-
     req.on('error', (err) => {
       reject(err);
     });
@@ -23,76 +26,47 @@ const getRequestBody = (req) => {
 
 // <--------------------- EXERCICIO 1 -------------------------->
 const getHome = async (req, res) => {
-  try {
-    res.statusCode = 200;
-    res.end(JSON.stringify({ message: 'Bem-vindo ao home' }));
-  } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: 'Dados inválidos enviados' }));
-  }
+  sendJson(res, 200, { message: 'Bem-vindo ao home' });
 };
 
 const getAbout = async (req, res) => {
-  try {
-    res.statusCode = 200;
-    res.end(JSON.stringify({ message: 'Nosso aplicativo é supimpa!' }));
-  } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: 'Dados inválidos enviados' }));
-  }
+  sendJson(res, 200, { message: 'Nosso aplicativo é supimpa!' });
 };
 
 const getStatus = async (req, res) => {
-  try {
-    res.statusCode = 200;
-    res.end(JSON.stringify({ message: 'Servidor funcionando!' }));
-  } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: 'Dados inválidos enviados' }));
-  }
+  sendJson(res, 200, { message: 'Servidor funcionando!' });
 };
 
 // <---------- EXERCICIO 2 ---------->
 const getAlunos = async (req, res) => {
   try {
     const alunos = await services.getAluno();
-    res.statusCode = 200;
-    res.end(JSON.stringify(alunos));
+    sendJson(res, 200, alunos);
   } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: error }));
+    sendJson(res, 400, { error: error.message || error });
   }
 };
+
 // <---------- EXERCICIO 3 ---------->
 const getAlunoById = async (req, res, id) => {
   try {
     const aluno = await services.getAlunoById(id);
-
     if (!aluno) {
-      res.statusCode = 404;
-      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+      return sendJson(res, 404, { message: 'Aluno não encontrado' });
     }
-    res.statusCode = 200;
-    res.end(JSON.stringify(aluno));
+    sendJson(res, 200, aluno);
   } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: error }));
+    sendJson(res, 400, { error: error.message || error });
   }
 };
+
 // <---------- EXERCICIO 4 ---------->
 const getProduto = async (req, res, categoria) => {
   try {
     const produtos = await services.getProduto(categoria);
-
-    if (!produtos) {
-      res.statusCode = 404;
-      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
-    }
-    res.statusCode = 200;
-    res.end(JSON.stringify(produtos));
+    sendJson(res, 200, produtos);
   } catch (error) {
-    res.statusCode = 400;
-    res.end(JSON.stringify({ error: error }));
+    sendJson(res, 400, { error: error.message || error });
   }
 };
 
@@ -103,18 +77,14 @@ const createAluno = async (req, res) => {
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ error: 'Campos obrigatórios: nome, turma e curso.' }));
+      return sendJson(res, 400, { error: 'Campos obrigatórios: nome, turma e curso.' });
     }
 
     const aluno = await services.addAluno(nome, turma, curso);
-
-    res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(aluno));
+    sendJson(res, 201, aluno);
   } catch (error) {
     console.error('Erro no controller:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Erro interno no servidor.' }));
+    sendJson(res, 500, { error: 'Erro interno no servidor.' });
   }
 };
 
@@ -123,49 +93,38 @@ const updateAluno = async (req, res, id) => {
   try {
     const alunoExistente = await services.getAlunoById(id);
     if (!alunoExistente) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+      return sendJson(res, 404, { message: 'Aluno não encontrado' });
     }
 
     const body = await getRequestBody(req);
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({
-          error:
-            "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios.",
-        })
-      );
+      return sendJson(res, 400, {
+        error: "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios.",
+      });
     }
 
     const alunoAtualizado = await services.updateAluno(id, nome, turma, curso);
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(alunoAtualizado));
+    sendJson(res, 200, alunoAtualizado);
   } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Erro ao processar a requisição (JSON malformado).' }));
+    sendJson(res, 400, { error: 'Erro ao processar a requisição (JSON malformado).' });
   }
 };
 
 // <-------- EXERCICIO 7 --------->
 const deleteAluno = async (req, res, id) => {
   try {
-    const foiDeletado = await services.deleteAluno(id);
-
-    if (!foiDeletado) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+    const deleted = await services.deleteAluno(id);
+    if (!deleted) {
+      return sendJson(res, 404, { message: 'Aluno não encontrado' });
     }
 
     res.writeHead(204);
     res.end();
   } catch (error) {
     console.error('Erro ao deletar aluno:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Erro interno ao tentar deletar o aluno.' }));
+    sendJson(res, 500, { error: 'Erro interno ao tentar deletar o aluno.' });
   }
 };
 

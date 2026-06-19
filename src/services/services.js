@@ -49,7 +49,7 @@ const addAluno = async (nome, turma, curso) => {
     idCounter = alunos[alunos.length - 1].id + 1;
   }
 
-  let novoAluno = { id: idCounter, nome, turma, curso };
+  let novoAluno = Aluno(idCounter, nome, turma, curso);
 
   alunos.push(novoAluno);
 
