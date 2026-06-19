@@ -39,6 +39,12 @@ module.exports = (req, res) => {
     return controller.updateAluno(req, res, id);
   }
 
+  // <-------- EXERCICIO 7 --------->
+  else if (url.startsWith('/alunos/') && method === 'DELETE') {
+    const id = url.split('/')[2];
+    return controller.deleteAluno(req, res, id);
+  }
+
   // <---------- ERRO 404 ----------->
   else {
     res.statusCode = 404;

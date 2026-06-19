@@ -42,24 +42,24 @@ const getProduto = async (categoria) => {
 
 // <-------- EXERCICIO 5 --------->
 const addAluno = async (nome, turma, curso) => {
-    const alunos = await loadData('alunos.json');
+  const alunos = await loadData('alunos.json');
 
-    let idCounter = 1;
-    if (alunos.length > 0) {
-        idCounter = alunos[alunos.length - 1].id + 1;
-    }
+  let idCounter = 1;
+  if (alunos.length > 0) {
+    idCounter = alunos[alunos.length - 1].id + 1;
+  }
 
-    let novoAluno = { id: idCounter, nome, turma, curso };
+  let novoAluno = { id: idCounter, nome, turma, curso };
 
-    alunos.push(novoAluno);
+  alunos.push(novoAluno);
 
-    try {
-        await fs.writeFile('alunos.json', JSON.stringify(alunos, null, 2));
-    } catch (err) {
+  try {
+    await fs.writeFile('alunos.json', JSON.stringify(alunos, null, 2));
+  } catch (err) {
     console.log('Erro ao salvar o arquivo', err);
-}
+  }
 
-return novoAluno;
+  return novoAluno;
 };
 
 // <-------- EXERCICIO 6 --------->
@@ -84,10 +84,32 @@ const updateAluno = async (id, nome, turma, curso) => {
   return alunoAtualizado;
 };
 
+// <-------- EXERCICIO 7 --------->
+const deleteAluno = async (id) => {
+  const alunos = await loadData('alunos.json');
+
+  const index = alunos.findIndex((aluno) => aluno.id == id);
+
+  if (index === -1) {
+    return false;
+  }
+
+  alunos.splice(index, 1);
+
+  try {
+    await fs.writeFile('alunos.json', JSON.stringify(alunos, null, 2));
+    return true;
+  } catch (err) {
+    console.log('Erro ao salvar o arquivo após exclusão:', err);
+    throw err;
+  }
+};
+
 module.exports = {
   getAluno,
   getAlunoById,
   getProduto,
   addAluno,
-  updateAluno
+  updateAluno,
+  deleteAluno,
 };

@@ -123,7 +123,7 @@ const updateAluno = async (req, res, id) => {
   try {
     const alunoExistente = await services.getAlunoById(id);
     if (!alunoExistente) {
-      res.writeHead(404, { "Content-Type": "application/json" });
+      res.writeHead(404, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
     }
 
@@ -131,20 +131,41 @@ const updateAluno = async (req, res, id) => {
     const { nome, turma, curso } = body;
 
     if (!nome || !turma || !curso) {
-      res.writeHead(400, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({
-        error: "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios."
-      }));
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          error:
+            "JSON inválido ou incompleto. Os campos 'nome', 'turma' e 'curso' são obrigatórios.",
+        })
+      );
     }
 
     const alunoAtualizado = await services.updateAluno(id, nome, turma, curso);
 
-    res.writeHead(200, { "Content-Type": "application/json" });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(alunoAtualizado));
-
   } catch (error) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Erro ao processar a requisição (JSON malformado)." }));
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Erro ao processar a requisição (JSON malformado).' }));
+  }
+};
+
+// <-------- EXERCICIO 7 --------->
+const deleteAluno = async (req, res, id) => {
+  try {
+    const foiDeletado = await services.deleteAluno(id);
+
+    if (!foiDeletado) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Aluno não encontrado' }));
+    }
+
+    res.writeHead(204);
+    res.end();
+  } catch (error) {
+    console.error('Erro ao deletar aluno:', error);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Erro interno ao tentar deletar o aluno.' }));
   }
 };
 
@@ -156,5 +177,6 @@ module.exports = {
   getAlunoById,
   getProduto,
   createAluno,
-  updateAluno
+  updateAluno,
+  deleteAluno,
 };
