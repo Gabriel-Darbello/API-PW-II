@@ -1,51 +1,68 @@
 const controller = require('../controllers/controller.js');
 
+// <-------- EXERCICIO 8 --------->
 const notFound = (res) => {
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ error: "Erro 404 - Rota não encontrada" }));
+};
+
+// <-------- EXERCICIO 10 --------->
+const methodNotAllowed = (res) => {
+  res.writeHead(405, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ error: "Erro 405 - Método não permitido para esta rota" }));
 };
 
 const handleRoutes = async (req, res) => {
   const { url, method } = req;
 
   // <-------------- EXERCICIO 1 -------------------->
-  if (url === '/' && method === 'GET') return controller.getHome(req, res);
-  if (url === '/sobre' && method === 'GET') return controller.getAbout(req, res);
-  if (url === '/status' && method === 'GET') return controller.getStatus(req, res);
+  if (url === '/') {
+    if (method === 'GET') return controller.getHome(req, res);
+    return methodNotAllowed(res);
+  }
 
-  // <-------- EXERCICIO 2 --------->
-  if (url === '/alunos' && method === 'GET') return controller.getAlunos(req, res);
+  if (url === '/sobre') {
+    if (method === 'GET') return controller.getAbout(req, res);
+    return methodNotAllowed(res);
+  }
 
-  // <-------- EXERCICIO 3 --------->
-  if (url.startsWith('/alunos/') && method === 'GET') {
-    const id = url.split('/')[2];
-    return controller.getAlunoById(req, res, id);
+  if (url === '/status') {
+    if (method === 'GET') return controller.getStatus(req, res);
+    return methodNotAllowed(res);
+  }
+
+  // <-------- EXERCICIO 2 & 5 --------->
+  if (url === '/alunos') {
+    if (method === 'GET') return controller.getAlunos(req, res);
+    if (method === 'POST') return controller.createAluno(req, res);
+    return methodNotAllowed(res);
+  }
+
+  // <-------- EXERCICIO 3, 6 & 7 --------->
+  const partesUrl = url.split('/');
+  if (partesUrl[1] === 'alunos' && partesUrl[2]) {
+    const id = partesUrl[2];
+    if (method === 'GET') return controller.getAlunoById(req, res, id);
+    if (method === 'PUT') return controller.updateAluno(req, res, id);
+    if (method === 'DELETE') return controller.deleteAluno(req, res, id);
+    return methodNotAllowed(res);
   }
 
   // <-------- EXERCICIO 4 --------->
-  if (url.startsWith('/produto') && method === 'GET') {
-    const urlCompleta = new URL(url, `http://${req.headers.host}`);
-    const categoria = urlCompleta.searchParams.get('categoria');
-    return controller.getProduto(req, res, categoria);
+  if (url.startsWith('/produto')) {
+    if (method === 'GET') {
+      const urlCompleta = new URL(url, `http://${req.headers.host}`);
+      const categoria = urlCompleta.searchParams.get('categoria');
+      return controller.getProduto(req, res, categoria);
+    }
+    return methodNotAllowed(res);
   }
 
-  // <-------- EXERCICIO 5 --------->
-  if (url === '/alunos' && method === 'POST') return controller.createAluno(req, res);
-
-  // <-------- EXERCICIO 6 --------->
-  if (url.startsWith('/alunos/') && method === 'PUT') {
-    const id = url.split('/')[2];
-    return controller.updateAluno(req, res, id);
+  // <-------- EXERCICIO 9 --------->
+  if (url === '/pagina') {
+    if (method === 'GET') return controller.getPagina(req, res);
+    return methodNotAllowed(res);
   }
-
-  // <-------- EXERCICIO 7 --------->
-  if (url.startsWith('/alunos/') && method === 'DELETE') {
-    const id = url.split('/')[2];
-    return controller.deleteAluno(req, res, id);
-  }
-
-    // <-------- EXERCICIO 9 --------->
-  if(url === '/pagina' && method === 'GET') return controller.getPagina(req, res)
 
   // <---------- ERRO 404 ----------->
   return notFound(res);
